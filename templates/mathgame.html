@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Math Game</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css')}}">
+  </head>
+  <body>
+    <h1>Math Game</h1>
+    <p>Choose your difficulty:</p>
+    <select id="difficulty">
+      <option value="1">Single digit integers</option>
+      <option value="2">Double digit integers</option>
+      <option value="3">Triple digit integers</option>
+    </select>
+    <br>
+    <br>
+    <p>Choose your operation:</p>
+    <select id="operation">
+      <option value="1">Addition</option>
+      <option value="2">Subtraction</option>
+      <option value="3">Multiplication</option>
+      <option value="4">Division</option>
+      <option value="5">Random operation</option>
+    </select>
+    <br>
+    <br>
+    <button id="start">Start</button>
+    <br>
+    <br>
+    <div id="question"></div>
+    <br>
+    <input type="text" id="answer" placeholder="Enter your answer">
+    <button id="submit">Submit</button>
+    <br>
+    <br>
+    <div id="result"></div>
+    <br>
+    <br>
+    <button id="exit">Exit</button>
+    <script>
+      document.getElementById("start").addEventListener("click", function() {
+        var difficulty = document.getElementById("difficulty").value;
+        var operation = document.getElementById("operation").value;
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            var response = JSON.parse(this.responseText);
+            document.getElementById("question").innerHTML = response.question;
+          }
+        };
+        xhr.open("POST", "/game/start");
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.send(JSON.stringify({difficulty: difficulty, operation: operation}));
+      });
+      document.getElementById("submit").addEventListener("click", function() {
+        var answer = document.getElementById("answer").value;
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            var response = JSON.parse(this.responseText);
+            document.getElementById("result").innerHTML = response.result;
+            document.getElementById("question").innerHTML = response.question;
+          }
+        };
+        xhr.open("POST", "/game/submit");
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.send(JSON.stringify({answer: answer}));
+      });
+      document.getElementById("exit").addEventListener("click", function() {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            var response = JSON.parse(this.responseText);
+            alert("Correct: " + response.correct + "\nWrong: " + response.wrong);
+          }
+        };
+        xhr.open("POST", "/game/exit");
+        xhr.send();
+      });
+    </script>
+  </body>
+</html>
