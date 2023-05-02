@@ -4,14 +4,12 @@
 from flask import Flask, render_template, url_for
 from flask_sqlalchemy import SQLAlchemy
 from sys import exit
-import random
-import subprocess
 from difficulty import *
 from operations import *
 from fatigue import *
 
 app = Flask(__name__)
-app.config['SQLALHEMY_DATABASE_URL'] = 'sqlite.///test.db'
+app.secret_key='mysecretkey'
 
 @app.route('/')
 
